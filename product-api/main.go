@@ -42,6 +42,8 @@ func main() {
 	//start server
 	go func() {
 		l.Printf("Starting server on port: %s", *bindAddress)
+		// if default servemux
+		//err := http.ListenAndServe(*bindAddress, sm)
 		err := s.ListenAndServe()
 
 		if err != nil {

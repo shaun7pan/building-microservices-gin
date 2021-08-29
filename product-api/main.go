@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -19,15 +20,13 @@ func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
 	// new handlers
-	h := handlers.NewHello(l)
-	g := handlers.NewGoodbye(l)
+	ph := handlers.NewProducts(l)
 
 	// create new serve mux
 	sm := http.NewServeMux()
 
 	// register handlers
-	sm.Handle("/", h)
-	sm.Handle("/goodbye", g)
+	sm.Handle("/", ph)
 
 	//create a new server
 	s := http.Server{
@@ -58,5 +57,11 @@ func main() {
 
 	sig := <-c
 	l.Println("Got signal:", sig)
+
+	//gracefully shutdown the server, waiting max 30 seconds for current
+	//operations to complete
+
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	s.Shutdown(ctx)
 
 }

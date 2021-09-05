@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/nicholasjackson/env"
 	"github.com/shaun7pan/building-microservices-gin/product-api/handlers"
 )
@@ -19,23 +20,20 @@ func main() {
 	env.Parse()
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
+	// Create a gin router with default middleware
+	r := gin.Default()
+
 	// new handlers
 	ph := handlers.NewProducts(l)
 
-	// create new serve mux
-	sm := http.NewServeMux()
-
-	// register handlers
-	sm.Handle("/", ph)
+	r.GET("/", ph.GetProducts)
+	r.POST("/", ph.AddProduct)
+	r.PUT("/:id", ph.UpdateProducts)
 
 	//create a new server
 	s := http.Server{
-		Addr:         *bindAddress,
-		Handler:      sm,
-		ErrorLog:     l,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		Addr:    *bindAddress,
+		Handler: r,
 	}
 
 	//start server
@@ -61,7 +59,18 @@ func main() {
 	//gracefully shutdown the server, waiting max 30 seconds for current
 	//operations to complete
 
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	s.Shutdown(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := s.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+
+	// catching ctx.Done(). timeout of 30 secconds.
+
+	select {
+	case <-ctx.Done():
+		log.Println("timeout of 30 seconds.")
+	}
+	log.Println("Server exiting")
 
 }

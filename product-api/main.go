@@ -9,7 +9,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/nicholasjackson/env"
+	"github.com/shaun7pan/building-microservices-gin/product-api/data"
 	"github.com/shaun7pan/building-microservices-gin/product-api/handlers"
 )
 
@@ -22,6 +25,10 @@ func main() {
 
 	// Create a gin router with default middleware
 	r := gin.Default()
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("sku", data.Sku)
+	}
 
 	// new handlers
 	ph := handlers.NewProducts(l)

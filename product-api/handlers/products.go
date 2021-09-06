@@ -32,7 +32,10 @@ func (p *Products) AddProduct(c *gin.Context) {
 	newProd := &data.Product{}
 	err := c.ShouldBindJSON(newProd)
 	if err != nil {
-		http.Error(c.Writer, "Unable to marchal json", http.StatusBadRequest)
+		// http.Error(c.Writer, err.Error(), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 	}
 	data.AddProducts(newProd)
 }
@@ -44,7 +47,7 @@ func (p *Products) UpdateProducts(c *gin.Context) {
 	err := c.ShouldBindJSON(prod)
 
 	if err != nil {
-		http.Error(c.Writer, "Unable to marchal json", http.StatusBadRequest)
+		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
 	}
 
 	// fetch id from URI
@@ -52,18 +55,18 @@ func (p *Products) UpdateProducts(c *gin.Context) {
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(c.Writer, "Unable to convert id", http.StatusBadRequest)
+		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = data.UpdateProducts(id, prod)
 	if err == data.ErrProductNotFound {
-		http.Error(c.Writer, "Product not found", http.StatusNotFound)
+		http.Error(c.Writer, data.ErrProductNotFound.Error(), http.StatusNotFound)
 		return
 	}
 
 	if err != nil {
-		http.Error(c.Writer, "Product not found", http.StatusInternalServerError)
+		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

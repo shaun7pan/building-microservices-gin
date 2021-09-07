@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/nicholasjackson/env"
 	"github.com/shaun7pan/building-microservices-gin/product-api/data"
@@ -35,11 +36,24 @@ func main() {
 
 	// Use middleware
 	r.Use(ph.CustomMiddleware)
-	r.Use(ph.BuildCustomMiddware())
+	r.Use(ph.BuildCustomMiddleware())
 
-	r.GET("/", ph.GetProducts)
-	r.POST("/", ph.AddProduct)
-	r.PUT("/:id", ph.UpdateProducts)
+	r.GET("/products", ph.ListAll)
+	r.GET("/products/:id", ph.ListSingle)
+
+	r.PUT("/products/:id", ph.Update)
+
+	r.POST("/products", ph.Create)
+	r.DELETE("/products", ph.Delete)
+
+	//serve swagger docs
+	// handler for documentation
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(opts, nil)
+
+	// r.StaticFile("/swagger.yaml", "./swagger.yaml")
+	r.GET("/docs", gin.WrapH(sh))
+	r.GET("/swagger.yaml", gin.WrapH(http.FileServer(http.Dir("./"))))
 
 	//create a new server
 	s := http.Server{

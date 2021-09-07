@@ -1,84 +1,57 @@
+// Package classification of Product API
+//
+// Documetation for Product API
+//
+// Schemes: http
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// swagger:meta
 package handlers
 
 import (
 	"log"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/shaun7pan/building-microservices-gin/product-api/data"
 )
 
 type Products struct {
 	l *log.Logger
 }
 
+type Param struct {
+	ID int `uri:"id" form:"id" binding:"required,gt=0"`
+}
+
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
-func (p *Products) GetProducts(c *gin.Context) {
-	p.l.Println("Handle GET Product")
+// getProductID returns the product ID from the URL
+// Panics if cannot convert the id into an integer
+// this should never happen as the router ensures that
+// this is a valid number
+func getProductIDFromURI(c *gin.Context) (int, error) {
+	param := Param{}
 
-	// fetch the products from datastore
-	ps := data.GetProducts()
-	c.JSON(http.StatusOK, ps)
+	if err := c.ShouldBindUri(&param); err != nil {
+		return -1, err
+	}
+
+	return param.ID, nil
 }
 
-func (p *Products) AddProduct(c *gin.Context) {
-	p.l.Printf("Handle POST product")
+func getProductIDFromParam(c *gin.Context) (int, error) {
+	param := Param{}
 
-	// fetch new product from request
-	newProd := &data.Product{}
-	err := c.ShouldBindJSON(newProd)
-	if err != nil {
-		// http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	if err := c.ShouldBindQuery(&param); err != nil {
+		log.Println(err.Error())
+		return -1, err
 	}
-	data.AddProducts(newProd)
-}
-
-func (p *Products) UpdateProducts(c *gin.Context) {
-	p.l.Println("Handling PUT requests.")
-
-	prod := &data.Product{}
-	err := c.ShouldBindJSON(prod)
-
-	if err != nil {
-		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-	}
-
-	// fetch id from URI
-	idStr := c.Param("id")
-
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = data.UpdateProducts(id, prod)
-	if err == data.ErrProductNotFound {
-		http.Error(c.Writer, data.ErrProductNotFound.Error(), http.StatusNotFound)
-		return
-	}
-
-	if err != nil {
-		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-// Custom middleware
-func (p *Products) CustomMiddleware(c *gin.Context) {
-	p.l.Println("Custom middleware log.")
-}
-
-// create custom middleware
-func (p *Products) BuildCustomMiddware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		p.l.Println("Username in header is: ", c.Request.Header.Get("username"))
-	}
+	return param.ID, nil
 }

@@ -33,6 +33,10 @@ func main() {
 	// new handlers
 	ph := handlers.NewProducts(l)
 
+	// Use middleware
+	r.Use(ph.CustomMiddleware)
+	r.Use(ph.BuildCustomMiddware())
+
 	r.GET("/", ph.GetProducts)
 	r.POST("/", ph.AddProduct)
 	r.PUT("/:id", ph.UpdateProducts)

@@ -70,3 +70,15 @@ func (p *Products) UpdateProducts(c *gin.Context) {
 		return
 	}
 }
+
+// Custom middleware
+func (p *Products) CustomMiddleware(c *gin.Context) {
+	p.l.Println("Custom middleware log.")
+}
+
+// create custom middleware
+func (p *Products) BuildCustomMiddware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		p.l.Println("Username in header is: ", c.Request.Header.Get("username"))
+	}
+}

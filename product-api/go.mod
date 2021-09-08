@@ -3,6 +3,7 @@ module github.com/shaun7pan/building-microservices-gin/product-api
 go 1.16
 
 require (
+	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-openapi/errors v0.19.6 // indirect
 	github.com/go-openapi/runtime v0.19.31 // indirect

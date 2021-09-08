@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-openapi/runtime/middleware"
@@ -37,6 +38,10 @@ func main() {
 	// Use middleware
 	r.Use(ph.CustomMiddleware)
 	r.Use(ph.BuildCustomMiddleware())
+	// handle cors
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
+	}))
 
 	r.GET("/products", ph.ListAll)
 	r.GET("/products/:id", ph.ListSingle)

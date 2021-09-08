@@ -21,12 +21,12 @@ func (p *Products) ListAll(c *gin.Context) {
 	c.JSON(http.StatusOK, ps)
 }
 
-// swagger:route GET /products/{id} products listSingle
+// swagger:route GET /products/{id} products listSingleProduct
 // Return a list of products from the database
 // responses:
 //	200: productResponse
 //	404: errorResponse
-//	500: internalErrorResponse
+//	500: errorResponse
 
 // ListSingle handles GET requests
 func (p *Products) ListSingle(c *gin.Context) {

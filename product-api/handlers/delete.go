@@ -7,6 +7,14 @@ import (
 	"github.com/shaun7pan/building-microservices-gin/product-api/data"
 )
 
+// swagger:route DELETE /products products deleteProduct
+// Update a products details
+//
+// responses:
+//	201: noContentResponse
+//  404: errorResponse
+//  501: errorResponse
+
 func (p *Products) Delete(c *gin.Context) {
 
 	//fetch id from uri

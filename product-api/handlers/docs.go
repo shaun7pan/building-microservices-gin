@@ -15,11 +15,30 @@
 // swagger:meta
 package handlers
 
-import "github.com/shaun7pan/building-microservices-gin/product-api/data"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/shaun7pan/building-microservices-gin/product-api/data"
+)
 
 //
 // NOTE: Types defined here are purely for documentation purposes
 // these types are not used by any of the handers
+
+// Generic error message returned as a string
+// swagger:response errorResponse
+type errorResponseWrapper struct {
+	// Description of the error
+	// in: body
+	Body gin.H
+}
+
+// Validation errors defined as an array of strings
+// swagger:response errorValidation
+type errorValidationWrapper struct {
+	// Collection of the errors
+	// in: body
+	Body string
+}
 
 // A list of products
 // swagger:response productsResponse
@@ -51,10 +70,18 @@ type productParamsWrapper struct {
 	Body data.Product
 }
 
-// swagger:parameters updateProduct
+// swagger:parameters listSingleProduct
 type productIDParamsWrapper struct {
 	// The id of the product for which the operation relates
 	// in: path
+	// required: true
+	ID int `json:"id"`
+}
+
+// swagger:parameters deleteProduct
+type productIDQueryWrapper struct {
+	// The id of the product for which the operation relates
+	// in: query
 	// required: true
 	ID int `json:"id"`
 }

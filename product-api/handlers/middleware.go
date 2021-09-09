@@ -12,11 +12,13 @@ import (
 // Custom middleware
 func (p *Products) CustomMiddleware(c *gin.Context) {
 	p.l.Println("Custom middleware log.")
+	c.Next()
 }
 
 // create custom middleware
 func (p *Products) BuildCustomMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p.l.Println("Username in header is: ", c.Request.Header.Get("username"))
+		c.Next()
 	}
 }

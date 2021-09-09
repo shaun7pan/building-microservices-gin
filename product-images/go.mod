@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/gin-contrib/size v0.0.0-20210429000130-f8b4345c9ddf // indirect
+	github.com/gin-contrib/gzip v0.0.3 // indirect
 	github.com/gin-gonic/gin v1.7.4
 	github.com/hashicorp/go-hclog v0.16.2
 	github.com/kr/pretty v0.1.0 // indirect

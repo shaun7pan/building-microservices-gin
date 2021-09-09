@@ -35,7 +35,7 @@ func main() {
 	// create the storage class, use local storage
 	// TODO: limit max filesize  to 5MB
 
-	stor, err := files.NewLocal(*basePath, 5*1024*1024)
+	stor, err := files.NewLocal(*basePath, 5*1024*1024*1024)
 	if err != nil {
 		l.Error("Unable to create storage", "error", err)
 		os.Exit(1)
@@ -46,8 +46,13 @@ func main() {
 
 	// create router
 	r := gin.Default()
+<<<<<<< HEAD
 	r.Use(limits.RequestSizeLimiter(stor.MaxFileSize()))
+=======
+	// r.Use(fh.GzipMiddleware)
+>>>>>>> 5e3a43d (add gzip middleware)
 	r.POST("/images/:id/:filename", fh.SaveFile)
+	r.StaticFile("/image", *basePath)
 
 	// create a new server
 	s := http.Server{

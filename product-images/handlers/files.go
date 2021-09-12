@@ -40,13 +40,6 @@ func (f *Files) SaveFile(c *gin.Context) {
 	f.log.Info("Handle POST request", "id", params.ID, "filename", params.FileName)
 
 	idstr := strconv.Itoa(params.ID)
-	if err := f.validateFileSize(c); err != nil {
-		f.log.Error("file is too big.")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Mesage": err.Error(),
-		})
-		return
-	}
 
 	f.saveFile(idstr, params.FileName, c)
 }
@@ -63,13 +56,4 @@ func (f *Files) saveFile(id, path string, c *gin.Context) {
 		})
 		return
 	}
-}
-
-func (f *Files) validateFileSize(c *gin.Context) error {
-	f.log.Info("Validate file size")
-	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, f.store.MaxFileSize())
-	if err := c.Request.ParseMultipartForm(f.store.MaxFileSize()); err != nil {
-		return err
-	}
-	return nil
 }

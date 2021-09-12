@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"time"
 
+	limits "github.com/gin-contrib/size"
 	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/go-hclog"
 	"github.com/nicholasjackson/env"
@@ -34,7 +35,7 @@ func main() {
 	// create the storage class, use local storage
 	// TODO: limit max filesize  to 5MB
 
-	stor, err := files.NewLocal(*basePath, 5*1024)
+	stor, err := files.NewLocal(*basePath, 5*1024*1024)
 	if err != nil {
 		l.Error("Unable to create storage", "error", err)
 		os.Exit(1)
@@ -45,6 +46,7 @@ func main() {
 
 	// create router
 	r := gin.Default()
+	r.Use(limits.RequestSizeLimiter(stor.MaxFileSize()))
 	r.POST("/images/:id/:filename", fh.SaveFile)
 
 	// create a new server

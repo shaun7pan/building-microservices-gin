@@ -3,6 +3,7 @@ package handlers
 import (
 	"compress/gzip"
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,7 @@ type wrappedGinWriter struct {
 // Custom middleware
 func (f *Files) GzipMiddleware(c *gin.Context) {
 	f.log.Info("gzip middleware")
-	if c.Request.Header.Get("Accept-Encoding") == "gzip" {
+	if strings.Contains(c.Request.Header.Get("Accept-Encoding"), "gzip") {
 		//create a gziped response
 		wgw := NewWrappedGinWriter(c.Writer)
 		wgw.Header().Set("Content-Encoding", "gzip")
@@ -38,7 +39,6 @@ func (wr *wrappedGinWriter) Write(d []byte) (int, error) {
 }
 
 func (wr *wrappedGinWriter) Flush() {
-
 	wr.gw.Flush()
 	wr.gw.Close()
 }

@@ -47,8 +47,10 @@ func main() {
 	// create router
 	r := gin.Default()
 	r.Use(limits.RequestSizeLimiter(stor.MaxFileSize()))
+	r.Use(fh.GzipMiddleware)
+
 	r.POST("/images/:id/:filename", fh.SaveFile)
-	r.StaticFile("/image", *basePath)
+	r.StaticFS("/images", http.Dir(*basePath))
 
 	// create a new server
 	s := http.Server{

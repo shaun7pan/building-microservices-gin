@@ -46,11 +46,7 @@ func main() {
 
 	// create router
 	r := gin.Default()
-<<<<<<< HEAD
 	r.Use(limits.RequestSizeLimiter(stor.MaxFileSize()))
-=======
-	// r.Use(fh.GzipMiddleware)
->>>>>>> 5e3a43d (add gzip middleware)
 	r.POST("/images/:id/:filename", fh.SaveFile)
 	r.StaticFile("/image", *basePath)
 
